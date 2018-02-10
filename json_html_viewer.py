@@ -207,9 +207,57 @@ html_escape_table = {
 def html_escape(text):
     """Produce entities within text."""
     return "".join(html_escape_table.get(c,c) for c in text)
+
+def clean_dict(d):
+    """
+    Clean up dictionary tree by removing empty entries and merging nodes
+    that only have one child, e.g.
+
+    x
+    / \
+    y   z
+        \
+        a
+
+    becomes
+    x
+    / \
+    y   a
+
+    They keys get merged like key1.key2 for clarity
+
+    """
+    if type(d) is list:
+        dnew = []
+        for i in range(len(d)):
+            dnew.append(clean_dict(d[i]))
+
+        return dnew
+
+    if issubclass(type(d),dict):
+        dnew = {}
+        
+        if (len(d) == 1) and issubclass(type(next(iter(d.values()))),dict):
+            parent_key = next(iter(d.keys()))
+            sub_dict   = next(iter(d.values()))
+            d.popitem()
+            for key,val in sub_dict.items():
+                new_key = '.'.join((parent_key, key))
+                d[new_key] = val
+
+        for key, val in d.items():
+            if (val != False) and (bool(val) == False):
+                continue
+            else:
+                dnew[key] = clean_dict(d[key])
+    
+        return dnew
+
+    return d
+    
         
 @convert_json
-def view(d, cssfile = _CSS_DEFAULTPATH):
+def view(d, cssfile = _CSS_DEFAULTPATH, clean = True):
     """
     This function takes either a dictionary or path to .json file as input and
     opens up an interactive tree-like browser in your web browser.
@@ -225,11 +273,14 @@ def view(d, cssfile = _CSS_DEFAULTPATH):
         view('some_file.json') 
 
     """
+    if clean:
+        d = clean_dict(d)
+
     h = HTML_Writer(cssfile=cssfile)
     h.view_html(d)
 
 @convert_json
-def write(d, filename, cssfile = _CSS_DEFAULTPATH):
+def write(d, filename, cssfile = _CSS_DEFAULTPATH, clean = True):
     """
     This function takes either a dictionary or path to .json file as input and
     saves an interactive HTML file.
@@ -245,6 +296,9 @@ def write(d, filename, cssfile = _CSS_DEFAULTPATH):
         write('some_file.json') 
 
     """
+    if clean:
+        d = clean_dict(d)
+
     h = HTML_Writer(cssfile = cssfile)
     h.write_html(d, filename)
 
