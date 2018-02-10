@@ -16,13 +16,12 @@ class HTML_Writer:
     def __init__(self, cssfile = _CSS_DEFAULTPATH):
         self.io = StringIO()
         self.make_pretty = False
-        
-        with open(cssfile) as f:
-            self._css = f.read()
-    
+        self._css_path = cssfile
+            
     @property
     def css(self):
-        return self._css
+        with open(self._css_path) as f:
+            return f.read()
 
     def println(self, x):
         self.io.write(x)
@@ -112,6 +111,7 @@ class HTML_Writer:
         """
         <html>
             <head>
+            <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
             <style>
                 {}
             </style>

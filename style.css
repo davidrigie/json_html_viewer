@@ -1,4 +1,6 @@
             body {
+                font-family: 'Roboto Mono', monospace;
+                font-size:smaller
             }
 
             li {
@@ -7,8 +9,18 @@
                 max-width: 160em;
             }
 
+            li:hover{
+                background-color: rgb(241, 247, 255);
+                font-weight: bold;
+            }
+
+            li:hover ul {
+                background-color: white;
+                font-weight: normal;
+            }
+
             .num {
-                color: #666666;
+                color: #616161;
             }
 
             .bool {
@@ -40,15 +52,11 @@
                 display: block;
             }
 
-            ul,li {
-                margin-left: 1em;
+            ul{
+                padding-left: 2em;
                 display: block;
             }
-            ul{
-                padding-left: 0;
-            }
-            
-  
+    
             input[type='checkbox']+label:before {
                 content: "\25B6";
                 font-size: 10;
